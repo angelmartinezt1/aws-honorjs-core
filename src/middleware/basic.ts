@@ -48,9 +48,13 @@ export const structuredLoggingMiddleware = () => {
   })
 }
 
-// Middleware de respuesta mejorada (añade headers útiles)
+// Middleware de respuesta mejorada (añade headers útiles y timing)
 export const enhancedResponseMiddleware = () => {
   return createMiddleware(async (c: Context, next: Next) => {
+    // 🔥 AÑADIR: Configurar startTime para execution_time
+    const startTime = Date.now()
+    c.set('startTime', startTime)
+
     await next()
 
     // Añadir headers útiles
@@ -67,5 +71,26 @@ export const enhancedResponseMiddleware = () => {
     if (!c.res.headers.get('X-Frame-Options')) {
       c.res.headers.set('X-Frame-Options', 'DENY')
     }
+  })
+}
+
+// Middleware básico que combina timing y headers (alternativa todo-en-uno)
+export const basicMiddleware = () => {
+  return createMiddleware(async (c: Context, next: Next) => {
+    // Configurar tiempo de inicio para execution_time
+    const startTime = Date.now()
+    c.set('startTime', startTime)
+
+    await next()
+
+    // Añadir headers de respuesta
+    const requestId = c.get('requestId')
+    if (requestId) {
+      c.res.headers.set('X-Request-ID', requestId)
+    }
+
+    // Headers de seguridad
+    c.res.headers.set('X-Content-Type-Options', 'nosniff')
+    c.res.headers.set('X-Frame-Options', 'DENY')
   })
 }

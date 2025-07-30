@@ -79,7 +79,14 @@ export function createApp<T extends AppContext = AppContext> (
     app.use('*', cors(corsOptions as any))
   }
 
-  // 4. Enhanced response middleware (headers adicionales)
+  // 4. Timing middleware (para execution_time)
+  app.use('*', async (c, next) => {
+    const startTime = Date.now()
+    c.set('startTime', startTime)
+    await next()
+  })
+
+  // 5. Enhanced response middleware (headers adicionales)
   app.use('*', enhancedResponseMiddleware())
 
   // Ruta de health check con formato estandarizado
