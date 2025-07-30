@@ -4,6 +4,7 @@ import { logger as honoLogger } from 'hono/logger'
 import { requestId as honoRequestId } from 'hono/request-id'
 import { enhancedResponseMiddleware, structuredLoggingMiddleware } from '../middleware/basic'
 import { logger } from '../utils/logger'
+import { createErrorResponse, createSuccessResponse } from '../utils/response-helpers'
 import type { AppContext, CoreAppOptions, CorsOptions } from './types'
 
 /**
@@ -75,41 +76,43 @@ export function createApp<T extends AppContext = AppContext> (
       }
     }
 
-    app.use('*', cors(corsOptions))
+    app.use('*', cors(corsOptions as any))
   }
 
   // 4. Enhanced response middleware (headers adicionales)
   app.use('*', enhancedResponseMiddleware())
 
-  // Ruta de health check (siempre disponible)
+  // Ruta de health check con formato estandarizado
   app.get('/health', (c) => {
     const uptime = process.uptime()
-    const requestId = c.get('requestId')
 
-    return c.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      environment,
-      uptime: Math.floor(uptime),
-      requestId,
-      version: process.env.npm_package_version || '1.0.0',
-      node: {
-        version: process.version,
-        platform: process.platform,
-        arch: process.arch
+    return createSuccessResponse(c, {
+      message: 'Service is healthy',
+      data: {
+        status: 'ok',
+        environment,
+        uptime: Math.floor(uptime),
+        version: process.env.npm_package_version || '1.0.0',
+        node: {
+          version: process.version,
+          platform: process.platform,
+          arch: process.arch
+        }
       }
     })
   })
 
-  // Ruta de ready check (para k8s readiness probes)
+  // Ruta de ready check con formato estandarizado
   app.get('/ready', (c) => {
-    return c.json({
-      status: 'ready',
-      timestamp: new Date().toISOString()
+    return createSuccessResponse(c, {
+      message: 'Service is ready',
+      data: {
+        status: 'ready'
+      }
     })
   })
 
-  // Manejador de errores mejorado
+  // Manejador de errores mejorado con formato estandarizado
   app.onError((err, c) => {
     const requestId = c.get('requestId')
 
@@ -122,18 +125,16 @@ export function createApp<T extends AppContext = AppContext> (
       userAgent: c.req.header('user-agent')
     })
 
-    return c.json({
-      error: 'Internal Server Error',
-      requestId,
-      timestamp: new Date().toISOString(),
-      ...(debug && {
-        message: err.message,
+    return createErrorResponse(c, {
+      message: err.message,
+      httpCode: 500,
+      data: debug ? {
         stack: err.stack?.split('\n').slice(0, 10) // Limitar stack trace
-      })
-    }, 500)
+      } : null
+    })
   })
 
-  // Manejador 404 mejorado
+  // Manejador 404 mejorado con formato estandarizado
   app.notFound((c) => {
     const requestId = c.get('requestId')
 
@@ -144,13 +145,13 @@ export function createApp<T extends AppContext = AppContext> (
       userAgent: c.req.header('user-agent')
     })
 
-    return c.json({
-      error: 'Not Found',
-      requestId,
+    return createErrorResponse(c, {
       message: `Route ${c.req.method} ${c.req.path} not found`,
-      timestamp: new Date().toISOString(),
-      suggestion: 'Check the API documentation for available endpoints'
-    }, 404)
+      httpCode: 404,
+      data: {
+        suggestion: 'Check the API documentation for available endpoints'
+      }
+    })
   })
 
   logger.info('Hono app created successfully')
