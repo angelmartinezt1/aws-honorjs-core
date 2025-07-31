@@ -1,3 +1,5 @@
+import type { LambdaCacheOptions } from './lambda-cache'
+import { LambdaCache } from './lambda-cache'
 import { MemoryCache } from './memory'
 import type { CacheAdapter, CacheOptions, MemoryCacheOptions } from './types'
 
@@ -13,6 +15,13 @@ export class CacheFactory {
   }
 
   /**
+   * Crear cache para Lambda execution context
+   */
+  static lambda<T = any>(options: LambdaCacheOptions = {}): LambdaCache<T> {
+    return new LambdaCache<T>(options)
+  }
+
+  /**
    * Crear cache Redis (placeholder para futura implementación)
    */
   static redis<T = any>(options: any = {}): CacheAdapter<T> {
@@ -20,10 +29,16 @@ export class CacheFactory {
   }
 
   /**
-   * Crear cache para Lambda (placeholder)
+   * Auto-detectar entorno y crear cache apropiado
    */
-  static lambda<T = any>(options: any = {}): CacheAdapter<T> {
-    throw new Error('Lambda cache not implemented yet')
+  static auto<T = any>(options: any = {}): CacheAdapter<T> {
+    // Detectar AWS Lambda
+    if (process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_RUNTIME_DIR) {
+      return CacheFactory.lambda<T>(options)
+    }
+
+    // Default: memory cache
+    return CacheFactory.memory<T>(options)
   }
 }
 
@@ -230,6 +245,8 @@ export const createCacheConfig = {
 }
 
 // Exports principales
+export { LambdaCache } from './lambda-cache'
+export type { LambdaCacheOptions, LambdaStats } from './lambda-cache'
 export { MemoryCache } from './memory'
 export type { CacheAdapter, CacheOptions, CacheStats, MemoryCacheOptions } from './types'
 
