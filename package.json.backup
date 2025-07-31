@@ -1,0 +1,41 @@
+{
+  "name": "aws-honorjs-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelmartinezt1/aws-honorjs-core.git"
+  },
+  "keywords": [],
+  "author": "",
+  "dependencies": {
+    "hono": "^4.8.9"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "eslint": "^9.32.0",
+    "neostandard": "^0.12.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  }
+}

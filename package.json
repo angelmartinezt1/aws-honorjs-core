@@ -1,41 +1,103 @@
 {
-  "name": "aws-honorjs-core",
+  "name": "@my-org/hono-core",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Hono core utilities with middleware, cache, and factory functions",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./cache": {
+      "import": "./dist/services/cache/index.js",
+      "require": "./dist/services/cache/index.cjs", 
+      "types": "./dist/services/cache/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware/index.js",
+      "require": "./dist/middleware/index.cjs",
+      "types": "./dist/middleware/index.d.ts"
+    },
+    "./factory": {
+      "import": "./dist/app/factory.js",
+      "require": "./dist/app/factory.cjs",
+      "types": "./dist/app/factory.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./utils/logger": {
+      "import": "./dist/utils/logger.js",
+      "require": "./dist/utils/logger.cjs", 
+      "types": "./dist/utils/logger.d.ts"
+    },
+    "./utils/transform": {
+      "import": "./dist/utils/transform.js",
+      "require": "./dist/utils/transform.cjs",
+      "types": "./dist/utils/transform.d.ts"
+    },
+    "./utils/response-helpers": {
+      "import": "./dist/utils/response-helpers.js",
+      "require": "./dist/utils/response-helpers.cjs",
+      "types": "./dist/utils/response-helpers.d.ts"
+    },
+    "./utils/response-types": {
+      "import": "./dist/utils/response-types.js",
+      "require": "./dist/utils/response-types.cjs",
+      "types": "./dist/utils/response-types.d.ts"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/angelmartinezt1/aws-honorjs-core.git"
-  },
-  "keywords": [],
-  "author": "",
-  "dependencies": {
-    "hono": "^4.8.9"
+  "keywords": [
+    "hono",
+    "typescript",
+    "middleware",
+    "cache",
+    "api",
+    "web-framework"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "hono": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.1.0",
-    "eslint": "^9.32.0",
-    "neostandard": "^0.12.2",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0",
+    "neostandard": "^0.7.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   },
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
-    }
-  }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/hono-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/hono-core/issues"
+  },
+  "homepage": "https://github.com/your-org/hono-core#readme"
 }
